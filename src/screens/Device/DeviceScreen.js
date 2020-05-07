@@ -39,8 +39,6 @@ export default class DeviceScreen extends Component {
       '00002a1a-0000-1000-8000-00805f9b34fb': 'Battery Power Source',
       '247e76c8-9dd4-412d-a75b-5244ad4cb8f4': 'RSSI Signal Strength',
     };
-
-    this.peripherals = []; // temporary storage for the detected peripherals
   }
 
   static navigationOptions = {
@@ -183,16 +181,23 @@ export default class DeviceScreen extends Component {
           <View style={styles.app_title}>
             <Text style={styles.header_text}>BLE Diagnostics Application</Text>
           </View>
-          {this.state.connected_peripheral &&
-            Object.keys(this.sensors).map(key => {
-              return (
-                <Text key={key}>
-                  {this.sensors[key] +
-                    ': ' +
-                    this.state.values[this.notifyUUID(key)]}
-                </Text>
-              );
-            })}
+        </View>
+        <View style={styles.body}>
+          <Text>
+            {this.sensors[0] + ': ' + this.state.values[this.notifyUUID(0)]}
+          </Text>
+          <Text>
+            {this.sensors[1] + ': ' + this.state.values[this.notifyUUID(1)]}
+          </Text>
+          <Text>
+            {this.sensors[2] + ': ' + this.state.values[this.notifyUUID(2)]}
+          </Text>
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="Go to Tare Page"
+            onPress={this.props.navigation.navigate('Tare')}
+          />
         </View>
       </View>
     );
