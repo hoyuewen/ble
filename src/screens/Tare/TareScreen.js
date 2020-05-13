@@ -50,17 +50,23 @@ export default class TareScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={styles.app_title}>
-            <Icon name="rocket" size={30} color="#900" />;
-            <Text style={styles.header_text}>Notification</Text>
-          </View>
+          <Text style={styles.notification}>Notification</Text>
         </View>
-        <View style={styles.body} />
-        <View style={styles.button}>
-          <Button
-            title="Go to Tare Page"
-            onPress={this.props.navigation.navigate('Tare')}
-          />
+        <View style={styles.body}>
+          <View style={styles.app_title}>
+            <Text style={styles.header_text}>TARE/ ZERO SCALE</Text>
+          </View>
+          <View style={styles.warning_container}>
+            <Text style={styles.warning}>
+              Ensure that no weight is on scale
+            </Text>
+          </View>
+          <View style={styles.weight_box}>
+            <Text style={styles.measure_title}>Measured Weight</Text>
+            <View style={styles.weight}>
+              <Text style={styles.weigh_counter}>95KG</Text>
+            </View>
+          </View>
         </View>
       </View>
     );

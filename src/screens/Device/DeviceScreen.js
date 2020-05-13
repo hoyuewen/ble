@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import strings from './strings';
 import styles from './styles';
 import React, {Component} from 'react';
@@ -13,24 +14,20 @@ import {
   FlatList, // for creating lists
   Alert,
 } from 'react-native';
+import { BackHandler } from 'react-native';
 import BleManager from 'react-native-ble-manager'; // for talking to BLE peripherals
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an event emitter for the BLE Manager module
 
 import Spinner from 'react-native-spinkit'; // for showing a spinner when loading something
 
-function getId({route}) {
-  const {itemId} = route.params;
-  this.connected_peripheral.setState(itemId);
-}
-
 export default class DeviceScreen extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       is_scanning: false, // whether the app is currently scanning for peripherals or not
       peripherals: null, // the peripherals detected
-      connected_peripheral: getId, // the currently connected peripheral
+      connected_peripheral: props.route.params.connected_peripheral, // the currently connected peripheral
       values: {},
     };
 
@@ -39,11 +36,16 @@ export default class DeviceScreen extends Component {
       '00002a1a-0000-1000-8000-00805f9b34fb': 'Battery Power Source',
       '247e76c8-9dd4-412d-a75b-5244ad4cb8f4': 'RSSI Signal Strength',
     };
+    console.log(this.state.connected_peripheral);
   }
 
   static navigationOptions = {
     drawerLabel: 'Device',
   };
+
+  componentDidMount() {
+    this.setupNotifications(this.state.connected_peripheral);
+  }
 
   disconnect(device) {
     console.log('Trying to disconnect from peripheral');
@@ -56,6 +58,10 @@ export default class DeviceScreen extends Component {
         // Failure code
         console.log(error);
       });
+  }
+
+  serviceUUID() {
+    return '5c1b9a0d-b5be-4a40-8f7a-66b36d0a5176';
   }
 
   notifyUUID(num) {
@@ -183,20 +189,32 @@ export default class DeviceScreen extends Component {
           </View>
         </View>
         <View style={styles.body}>
-          <Text>
-            {this.sensors[0] + ': ' + this.state.values[this.notifyUUID(0)]}
-          </Text>
-          <Text>
-            {this.sensors[1] + ': ' + this.state.values[this.notifyUUID(1)]}
-          </Text>
-          <Text>
-            {this.sensors[2] + ': ' + this.state.values[this.notifyUUID(2)]}
-          </Text>
+        <Text>{this.state.info}</Text>
+        {Object.keys(this.sensors).map(key => {
+          return (
+            console.log(this.state.values[key]),
+            <Text key={key}>
+              {this.sensors[key] +
+                ': ' +
+                (this.state.values[this.notifyUUID(key)] || '-')}
+            </Text>
+          );
+        })}
         </View>
         <View style={styles.button}>
           <Button
             title="Go to Tare Page"
-            onPress={this.props.navigation.navigate('Tare')}
+            onPress={() => {
+              this.props.navigation.navigate('Tare');}}
+
+          />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="Disconnect"
+            onPress={() => {
+              this.disconnect(this.state.connected_peripheral);
+              this.props.navigation.navigate('Home');}}
           />
         </View>
       </View>

@@ -175,9 +175,14 @@ export default class HomeScreen extends Component {
             title="Connect"
             color="#1491ee"
             style={styles.list_item_button}
-            onPress={this.props.navigation.navigate('Device', {
-              connected_peripheral: item.id,
-            })}
+            onPress={() => {
+              this.connect(item.id);
+              // this.props.navigation.navigate('Device', {
+              //   connected_peripheral: item.id,
+              // });
+              // this.props.navigation.navigate("Device", { connected_peripheral: item.id,})
+              console.log(item.name + ' Pressed');
+            }}
           />
         </View>
       );
@@ -189,9 +194,14 @@ export default class HomeScreen extends Component {
             title="Connect"
             color="#1491ee"
             style={styles.list_item_button}
-            onPress={this.props.navigation.navigate('Device', {
-              connected_peripheral: item.id,
-            })}
+            onPress={() => {
+              this.connect(item.id);
+              // this.props.navigation.navigate('Device', {
+              //   connected_peripheral: item.id,
+              // });
+              // this.props.navigation.navigate("Device", { connected_peripheral: item.id,})
+              console.log(item.name + ' Pressed');
+            }}
           />
         </View>
       );
@@ -214,6 +224,9 @@ export default class HomeScreen extends Component {
         // retrieve the services advertised by this peripheral
         BleManager.retrieveServices(peripheral_id).then(peripheralInfo => {
           console.log('Peripheral info:', peripheralInfo);
+        });
+        this.props.navigation.navigate('Device', {
+          connected_peripheral: peripheral_id,
         });
       })
       .catch(error => {
