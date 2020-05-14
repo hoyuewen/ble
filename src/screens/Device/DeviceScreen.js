@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import strings from './strings';
 import styles from './styles';
 import React, {Component} from 'react';
@@ -14,7 +13,7 @@ import {
   FlatList, // for creating lists
   Alert,
 } from 'react-native';
-import { BackHandler } from 'react-native';
+import {BackHandler} from 'react-native';
 import BleManager from 'react-native-ble-manager'; // for talking to BLE peripherals
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an event emitter for the BLE Manager module
@@ -36,16 +35,15 @@ export default class DeviceScreen extends Component {
       '00002a1a-0000-1000-8000-00805f9b34fb': 'Battery Power Source',
       '247e76c8-9dd4-412d-a75b-5244ad4cb8f4': 'RSSI Signal Strength',
     };
-    console.log(this.state.connected_peripheral);
   }
 
   static navigationOptions = {
     drawerLabel: 'Device',
   };
 
-  componentDidMount() {
-    this.setupNotifications(this.state.connected_peripheral);
-  }
+  // componentDidMount() {
+  // 	this.setupNotifications(this.state.connected_peripheral);
+  // }
 
   disconnect(device) {
     console.log('Trying to disconnect from peripheral');
@@ -73,7 +71,7 @@ export default class DeviceScreen extends Component {
     for (const id in this.sensors) {
       //console.log(id);
       const characteristicN = this.notifyUUID(id);
-      console.log(characteristicN);
+      console.log('characteristic N: ' + characteristicN);
       await BleManager.startNotification(device, service, characteristicN)
         .then(() => {
           // Add event listener
@@ -83,13 +81,27 @@ export default class DeviceScreen extends Component {
             ({value, peripheral, characteristic, service}) => {
               //var string = new TextDecoder('utf-8').decode(value);
               // const data = bytesToString(value);
-              //console.log(value);
-              const data = value[0];
               console.log(
-                `Recieved ${data} for characteristic ${characteristic}`,
+                'id: ' +
+                  id +
+                  ', val: ' +
+                  value +
+                  ', data: ' +
+                  value[0] +
+                  ', service: ' +
+                  service +
+                  'peripheral: ' +
+                  peripheral +
+                  ', Characteristic: ' +
+                  characteristic,
               );
-              console.log(typeof data);
-              this.updateValue(characteristicN, data);
+              const data = value[0];
+              // console.log(
+              // 	`Received ${data} for characteristic ${characteristic}`
+              // );
+              // console.log(typeof data);
+              this.updateValue(characteristic, data);
+              // console.log(this.state.values);
             },
           );
         })
@@ -111,71 +123,109 @@ export default class DeviceScreen extends Component {
     if (key === '00002a1b-0000-1000-8000-00805f9b34fb') {
       if (value === 0) {
         readableData = 'Battery State Unknown';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 1) {
         readableData = 'Battery State Not Charging';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 2) {
         readableData = 'Battery State Charging';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 3) {
         readableData = 'Battery State Charged';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 4) {
         readableData = 'Battery State Discharging';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 5) {
         readableData = 'Battery State Fault';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
         // this.state.values[key] = readableData;
       } else if (value === 6) {
         readableData = 'Battery State Disconnected';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       }
     } else if (key === '247e76c8-9dd4-412d-a75b-5244ad4cb8f4') {
       if (value === 0) {
         readableData = 'RSSI Signal Unknown';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 1) {
         readableData = 'Signal Strength Very Poor';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 2) {
         readableData = 'Signal Strength Poor';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 3) {
         readableData = 'Signal Strength Fair';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 4) {
         readableData = 'Signal Strength Strong';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 5) {
         readableData = 'Signal Strength Very Strong';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       }
     } else if (key === '00002a1a-0000-1000-8000-00805f9b34fb') {
       if (value === 0) {
         readableData = 'Power Source Unknown';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 1) {
         readableData = 'Power Source VIN';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 2) {
         readableData = 'Power Source USB Host';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 3) {
         readableData = 'Power Source USB Adapter';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 4) {
         readableData = 'Power Source USB OTG';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       } else if (value === 5) {
         readableData = 'Power Source Battery';
-        this.setState({values: {...this.state.values, [key]: readableData}});
+        this.setState({
+          values: {...this.state.values, [key]: readableData},
+        });
       }
     }
   }
@@ -189,24 +239,39 @@ export default class DeviceScreen extends Component {
           </View>
         </View>
         <View style={styles.body}>
-        <Text>{this.state.info}</Text>
-        {Object.keys(this.sensors).map(key => {
-          return (
-            console.log(this.state.values[key]),
-            <Text key={key}>
-              {this.sensors[key] +
-                ': ' +
-                (this.state.values[this.notifyUUID(key)] || '-')}
-            </Text>
-          );
-        })}
+          <Text>{this.state.info}</Text>
+          {Object.keys(this.sensors).map(key => {
+            return (
+              // console.log("this.state.values"),
+              console.log('this.state.values : ' + this.state.values[key]),
+              (
+                <Text key={key}>
+                  {this.sensors[key] + ': ' + (this.state.values[key] || '-')}
+                </Text>
+              )
+            );
+          })}
+        </View>
+        {/* <FlatList
+					data={this.state.values}
+					renderItem={({ item }) => {
+						return <Text style={styles.textStyle}>{item.key}</Text>;
+					}}
+				/> */}
+        <View style={styles.button}>
+          <Button
+            title="Update Data"
+            onPress={() => {
+              this.setupNotifications(this.state.connected_peripheral);
+            }}
+          />
         </View>
         <View style={styles.button}>
           <Button
             title="Go to Tare Page"
             onPress={() => {
-              this.props.navigation.navigate('Tare');}}
-
+              this.props.navigation.navigate('Tare');
+            }}
           />
         </View>
         <View style={styles.button}>
@@ -214,7 +279,8 @@ export default class DeviceScreen extends Component {
             title="Disconnect"
             onPress={() => {
               this.disconnect(this.state.connected_peripheral);
-              this.props.navigation.navigate('Home');}}
+              this.props.navigation.navigate('Home');
+            }}
           />
         </View>
       </View>
