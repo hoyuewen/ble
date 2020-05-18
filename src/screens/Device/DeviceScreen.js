@@ -270,7 +270,9 @@ export default class DeviceScreen extends Component {
           <Button
             title="Go to Tare Page"
             onPress={() => {
-              this.props.navigation.navigate('Tare');
+              this.props.navigation.navigate('Tare', {
+                connected_peripheral: this.state.connected_peripheral,
+              });
             }}
           />
         </View>

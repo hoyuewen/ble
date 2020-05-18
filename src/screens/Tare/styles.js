@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   body: {
-    flex: 0.7,
+    flex: 0.6,
   },
   app_title: {
     padding: 10,
@@ -40,10 +40,31 @@ const styles = StyleSheet.create({
   },
   weight_box: {
     backgroundColor: 'red',
-    flex: 0.3,
+    flex: 0.4,
     alignItems: 'center',
-    position: 'relative',
-    justifyContent: 'flex-end',
+    width: '30%',
+  },
+  weight: {
+    backgroundColor: 'green',
+    width: '50%',
+    alignItems: 'center',
+  },
+  footer: {
+    backgroundColor: 'blue',
+    flex: 0.35,
+  },
+  ack_container: {
+    backgroundColor: 'green',
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ack: {
+    fontSize: 14,
+  },
+  button_container: {
+    flex: 0.5,
+    justifyContent: 'center',
   },
 });
 

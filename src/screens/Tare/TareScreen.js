@@ -20,18 +20,13 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an
 
 import Spinner from 'react-native-spinkit'; // for showing a spinner when loading something
 
-function getId({route}) {
-  const {itemId} = route.params;
-  this.connected_peripheral.setState(itemId);
-}
-
 export default class TareScreen extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       is_scanning: false, // whether the app is currently scanning for peripherals or not
       peripherals: null, // the peripherals detected
-      connected_peripheral: getId, // the currently connected peripheral
+      connected_peripheral: props.route.params.connected_peripheral, // the currently connected peripheral
       values: {},
     };
 
@@ -43,7 +38,7 @@ export default class TareScreen extends Component {
   }
 
   static navigationOptions = {
-    drawerLabel: 'Device',
+    drawerLabel: 'Tare',
   };
 
   render() {
@@ -66,6 +61,16 @@ export default class TareScreen extends Component {
             <View style={styles.weight}>
               <Text style={styles.weigh_counter}>95KG</Text>
             </View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <View style={styles.ack_container}>
+            <Text style={styles.ack}>
+              Save tare value, app will lock until device acknowledges
+            </Text>
+          </View>
+          <View style={styles.button_container}>
+            <Button title="Save" />
           </View>
         </View>
       </View>
