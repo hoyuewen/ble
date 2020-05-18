@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
   },
   warning_container: {
     flex: 1,
-    backgroundColor: '#4afbc1',
     justifyContent: 'center',
   },
   warning: {
@@ -39,28 +38,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   weight_box: {
-    backgroundColor: 'red',
     flex: 0.4,
     alignItems: 'center',
     width: '30%',
+    backgroundColor: '#c0c0c0',
   },
   weight: {
-    backgroundColor: 'green',
     width: '50%',
     alignItems: 'center',
+    backgroundColor: '#bfff00',
   },
   footer: {
-    backgroundColor: 'blue',
     flex: 0.35,
   },
   ack_container: {
-    backgroundColor: 'green',
     flex: 0.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   ack: {
-    fontSize: 14,
+    fontSize: 18,
+    width: '90%',
+    textAlign: 'center',
   },
   button_container: {
     flex: 0.5,

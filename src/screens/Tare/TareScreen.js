@@ -15,6 +15,7 @@ import {
   Alert,
 } from 'react-native';
 import BleManager from 'react-native-ble-manager'; // for talking to BLE peripherals
+import {Buffer} from 'buffer';
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an event emitter for the BLE Manager module
 
@@ -31,15 +32,40 @@ export default class TareScreen extends Component {
     };
 
     this.sensors = {
-      '00002a1b-0000-1000-8000-00805f9b34fb': 'Battery Level State',
-      '00002a1a-0000-1000-8000-00805f9b34fb': 'Battery Power Source',
-      '247e76c8-9dd4-412d-a75b-5244ad4cb8f4': 'RSSI Signal Strength',
+      'af840765-bd3f-4a73-8319-0cc7edac6d58': 'Read Frequency',
+      '785ecf18-15d3-4097-b5fa-a876c34d71d3': 'Write Frequency',
     };
   }
 
   static navigationOptions = {
     drawerLabel: 'Tare',
   };
+
+  serviceUUID() {
+    return '5c1b9a0d-b5be-4a40-8f7a-66b36d0a5176';
+  }
+
+  read(deviceID) {
+    var readCharacteristic = 'af840765-bd3f-4a73-8319-0cc7edac6d58';
+    BleManager.read(
+      this.state.connected_peripheral,
+      this.serviceUUID(),
+      readCharacteristic,
+    )
+      .then(readData => {
+        // Success code
+        console.log('Read: ' + readData);
+
+        const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
+        const sensorData = buffer.readUInt8(0, true);
+        console.log('sensor data: ' + sensorData);
+        return sensorData;
+      })
+      .catch(error => {
+        // Failure code
+        console.log(error);
+      });
+  }
 
   render() {
     return (
@@ -70,6 +96,12 @@ export default class TareScreen extends Component {
             </Text>
           </View>
           <View style={styles.button_container}>
+            <Button
+              title="Read Value"
+              onPress={() => {
+                this.read(this.state.connected_peripheral);
+              }}
+            />
             <Button title="Save" />
           </View>
         </View>
