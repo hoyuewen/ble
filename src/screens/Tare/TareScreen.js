@@ -16,6 +16,9 @@ import {
 } from 'react-native';
 import BleManager from 'react-native-ble-manager'; // for talking to BLE peripherals
 import {Buffer} from 'buffer';
+// Import/require in the beginning of the file
+import {stringToBytes} from 'convert-string';
+
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an event emitter for the BLE Manager module
 
@@ -60,6 +63,26 @@ export default class TareScreen extends Component {
         const sensorData = buffer.readUInt8(0, true);
         console.log('sensor data: ' + sensorData);
         return sensorData;
+      })
+      .catch(error => {
+        // Failure code
+        console.log(error);
+      });
+  }
+
+  write(yourStringData) {
+    var writeCharacteristics = '785ecf18-15d3-4097-b5fa-a876c34d71d3';
+    // Convert data to byte array before write/writeWithoutResponse
+    const data = stringToBytes(yourStringData);
+    BleManager.writeWithoutResponse(
+      this.state.connected_peripheral,
+      this.serviceUUID(),
+      writeCharacteristics,
+      data,
+    )
+      .then(() => {
+        // Success code
+        console.log('Writed: ' + data);
       })
       .catch(error => {
         // Failure code
