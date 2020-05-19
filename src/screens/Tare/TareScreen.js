@@ -1,6 +1,6 @@
 import strings from './strings';
 import styles from './styles';
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {Icon} from 'react-native-vector-icons/FontAwesome';
 import {
   AppRegistry,
@@ -13,11 +13,12 @@ import {
   Button,
   FlatList, // for creating lists
   Alert,
+  TextInput,
 } from 'react-native';
 import BleManager from 'react-native-ble-manager'; // for talking to BLE peripherals
 import {Buffer} from 'buffer';
 // Import/require in the beginning of the file
-import {stringToBytes} from 'convert-string';
+import {stringToBytes, bytesToString} from 'convert-string';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule); // create an event emitter for the BLE Manager module
@@ -55,13 +56,27 @@ export default class TareScreen extends Component {
       this.serviceUUID(),
       readCharacteristic,
     )
+      // .then(readData => {
+      //   // Success code
+      //   console.log('Read before buffer: ' + readData);
+
+      //   //const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
+      //   //const sensorData = buffer.readUInt8(1, true);
+      //   // console.log('sensor data: ' + sensorData);
+      //   const buffer = bytesToString(readData);
+      //   console.log('Read after buffer: ' + buffer);
+      //   this.setState({
+      //     values: {...this.state.values, [readCharacteristic]: buffer},
+      //   });
+      //   console.log(this.state.values);
+      //   return buffer;
+      // })
       .then(readData => {
         // Success code
         console.log('Read: ' + readData);
 
         const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
         const sensorData = buffer.readUInt8(0, true);
-        console.log('sensor data: ' + sensorData);
         this.setState({
           values: {...this.state.values, [readCharacteristic]: sensorData},
         });
@@ -74,10 +89,12 @@ export default class TareScreen extends Component {
       });
   }
 
-  write(yourStringData) {
+  write() {
     var writeCharacteristics = '785ecf18-15d3-4097-b5fa-a876c34d71d3';
+    console.log(this.state.values);
+    console.log('string data: ' + this.state.values[writeCharacteristics]);
     // Convert data to byte array before write/writeWithoutResponse
-    const data = stringToBytes(yourStringData);
+    const data = stringToBytes(this.state.values[writeCharacteristics]);
     BleManager.writeWithoutResponse(
       this.state.connected_peripheral,
       this.serviceUUID(),
@@ -95,7 +112,6 @@ export default class TareScreen extends Component {
   }
 
   render() {
-    var reading = 0;
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -124,15 +140,32 @@ export default class TareScreen extends Component {
             <Text style={styles.ack}>
               Save tare value, app will lock until device acknowledges
             </Text>
+            <TextInput
+              placeholder="Type here to translate!"
+              onChangeText={text => {
+                this.setState({
+                  values: {
+                    ...this.state.values,
+                    ['785ecf18-15d3-4097-b5fa-a876c34d71d3']: text,
+                  },
+                });
+              }}
+              defaultValue={''}
+            />
           </View>
           <View style={styles.button_container}>
             <Button
               title="Read Value"
               onPress={() => {
-                reading = this.read(this.state.connected_peripheral);
+                this.read(this.state.connected_peripheral);
               }}
             />
-            <Button title="Save" />
+            <Button
+              title="Save"
+              onPress={() => {
+                this.write();
+              }}
+            />
           </View>
         </View>
       </View>
