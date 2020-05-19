@@ -62,6 +62,10 @@ export default class TareScreen extends Component {
         const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
         const sensorData = buffer.readUInt8(0, true);
         console.log('sensor data: ' + sensorData);
+        this.setState({
+          values: {...this.state.values, [readCharacteristic]: sensorData},
+        });
+        console.log(this.state.values);
         return sensorData;
       })
       .catch(error => {
@@ -91,6 +95,7 @@ export default class TareScreen extends Component {
   }
 
   render() {
+    var reading = 0;
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -108,7 +113,9 @@ export default class TareScreen extends Component {
           <View style={styles.weight_box}>
             <Text style={styles.measure_title}>Measured Weight</Text>
             <View style={styles.weight}>
-              <Text style={styles.weigh_counter}>95KG</Text>
+              <Text style={styles.weigh_counter}>
+                {this.state.values['af840765-bd3f-4a73-8319-0cc7edac6d58']}
+              </Text>
             </View>
           </View>
         </View>
@@ -122,7 +129,7 @@ export default class TareScreen extends Component {
             <Button
               title="Read Value"
               onPress={() => {
-                this.read(this.state.connected_peripheral);
+                reading = this.read(this.state.connected_peripheral);
               }}
             />
             <Button title="Save" />
