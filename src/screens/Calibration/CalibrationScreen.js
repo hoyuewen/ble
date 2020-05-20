@@ -32,7 +32,12 @@ export default class CalibrationScreen extends Component {
       is_scanning: false, // whether the app is currently scanning for peripherals or not
       peripherals: null, // the peripherals detected
       connected_peripheral: props.route.params.connected_peripheral, // the currently connected peripheral
-      values: {},
+      values: {
+        '0f22202b-1d12-49ed-89b3-1c96bebd7542': '0',
+        '54be66f0-2ec3-40cf-a4df-64d4c10cd9f5': '0',
+        'af840765-bd3f-4a73-8319-0cc7edac6d58': '0',
+        '785ecf18-15d3-4097-b5fa-a876c34d71d3': '0',
+      },
     };
 
     this.sensors = {
@@ -69,11 +74,12 @@ export default class CalibrationScreen extends Component {
         const buffer = Buffer.from(readData);
         const sensorData = buffer.readUInt8(0, true);
         console.log('Read after buffer: ' + sensorData);
+        const numberToString = '' + sensorData;
         this.setState({
-          values: {...this.state.values, [readCharacteristic]: sensorData},
+          values: {...this.state.values, [readCharacteristic]: numberToString},
         });
         console.log(this.state.values);
-        return sensorData;
+        return numberToString;
       })
       .catch(error => {
         // Failure code
@@ -95,16 +101,20 @@ export default class CalibrationScreen extends Component {
         const buffer = Buffer.from(readData);
         const sensorData = buffer.readUInt8(0, true);
         console.log('Read after buffer: ' + sensorData);
+        const numberToString = '' + sensorData;
         this.setState({
-          values: {...this.state.values, [readZeroCharacteristic]: sensorData},
+          values: {
+            ...this.state.values,
+            [readZeroCharacteristic]: numberToString,
+          },
         });
         console.log(this.state.values);
-        if (sensorData === 1) {
+        if (numberToString === 1) {
           console.log('Zero Scale = TRUE');
         } else {
           console.log('Zero scale = FALSE');
         }
-        return sensorData;
+        return numberToString;
       })
       .catch(error => {
         // Failure code
@@ -183,6 +193,7 @@ export default class CalibrationScreen extends Component {
                 },
               });
               this.writeWeight();
+              this.readWeight(this.state.connected_peripheral);
             }}
           />
           <Text>
@@ -199,6 +210,7 @@ export default class CalibrationScreen extends Component {
                 },
               });
               this.writeWeight();
+              this.readWeight(this.state.connected_peripheral);
             }}
           />
           <Button
@@ -211,6 +223,12 @@ export default class CalibrationScreen extends Component {
                 },
               });
               this.writeZero();
+            }}
+          />
+          <Button
+            title="Read Average Weight"
+            onPress={() => {
+              this.readWeight(this.state.connected_peripheral);
             }}
           />
         </View>
