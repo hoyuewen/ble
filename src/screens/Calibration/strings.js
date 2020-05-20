@@ -2,10 +2,10 @@ import LocalizedString from 'react-native-localization';
 
 let strings = new LocalizedString({
   en: {
-    deviceTitle: 'Device',
+    calibrationTitle: 'Calibration',
   },
   de: {
-    deviceTitle: 'Device',
+    calibrationTitle: 'Calibration',
   },
 });
 
