@@ -187,7 +187,7 @@ export default class CalibrationScreen extends Component {
           />
           <Text>
             {'Average Measured Weight: ' +
-              this.readWeight(this.state.connected_peripheral)}
+              this.state.values['af840765-bd3f-4a73-8319-0cc7edac6d58']}
           </Text>
           <Button
             title="-"
