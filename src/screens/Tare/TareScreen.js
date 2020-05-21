@@ -56,33 +56,34 @@ export default class TareScreen extends Component {
       this.serviceUUID(),
       readCharacteristic,
     )
-      // .then(readData => {
-      //   // Success code
-      //   console.log('Read before buffer: ' + readData);
-
-      //   //const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
-      //   //const sensorData = buffer.readUInt8(1, true);
-      //   // console.log('sensor data: ' + sensorData);
-      //   const buffer = bytesToString(readData);
-      //   console.log('Read after buffer: ' + buffer);
-      //   this.setState({
-      //     values: {...this.state.values, [readCharacteristic]: buffer},
-      //   });
-      //   console.log(this.state.values);
-      //   return buffer;
-      // })
       .then(readData => {
         // Success code
-        console.log('Read: ' + readData);
+        console.log('Read before buffer: ' + readData);
 
-        const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
-        const sensorData = buffer.readUInt8(0, true);
+        //   //const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
+        //   //const sensorData = buffer.readUInt8(1, true);
+        // console.log('sensor data: ' + sensorData);
+        const buffer = bytesToString(readData);
+        console.log('Read after buffer: ' + buffer);
         this.setState({
-          values: {...this.state.values, [readCharacteristic]: sensorData},
+          values: {...this.state.values, [readCharacteristic]: buffer},
         });
         console.log(this.state.values);
-        return sensorData;
+        return buffer;
       })
+      // This method uses buffer
+      // .then(readData => {
+      //   // Success code
+      //   console.log('Read: ' + readData);
+
+      //   const buffer = Buffer.from(readData); //https://github.com/feross/buffer#convert-arraybuffer-to-buffer
+      //   const sensorData = buffer.readUInt8(0, true);
+      //   this.setState({
+      //     values: {...this.state.values, [readCharacteristic]: sensorData},
+      //   });
+      //   console.log(this.state.values);
+      //   return sensorData;
+      // })
       .catch(error => {
         // Failure code
         console.log(error);
@@ -95,6 +96,15 @@ export default class TareScreen extends Component {
     console.log('string data: ' + this.state.values[writeCharacteristics]);
     // Convert data to byte array before write/writeWithoutResponse
     const data = stringToBytes(this.state.values[writeCharacteristics]);
+    // var toBuffer = require('typedarray-to-buffer');
+
+    // var arr = new Uint8Array([1, 2, 3]);
+    // arr = toBuffer(arr);
+
+    // // arr is a buffer now!
+
+    // arr.toString(); // '\u0001\u0002\u0003'
+    // arr.readUInt16BE(0); // 258
     BleManager.writeWithoutResponse(
       this.state.connected_peripheral,
       this.serviceUUID(),
