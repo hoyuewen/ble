@@ -70,18 +70,18 @@ export default class CalibrationScreen extends Component {
 		)
 			.then((readData) => {
 				// Success code
-				console.log("Read before buffer: " + readData);
+				// console.log("Read before buffer: " + readData);
 				// const buffer = bytesToString(readData);
 				const buffer = Buffer.from(readData);
 				const sensorData = buffer.readUInt8(0, true);
-				console.log("Read after buffer: " + sensorData);
+				// console.log("Read after buffer: " + sensorData);
 				this.setState({
 					values: {
 						...this.state.values,
 						[readCharacteristic]: sensorData,
 					},
 				});
-				console.log(this.state.values);
+				// console.log(this.state.values);
 				return sensorData;
 			})
 			.catch((error) => {
@@ -99,18 +99,18 @@ export default class CalibrationScreen extends Component {
 		)
 			.then((readData) => {
 				// Success code
-				console.log("Read before buffer: " + readData);
+				// console.log("Read before buffer: " + readData);
 				// const buffer = bytesToString(readData);
 				const buffer = Buffer.from(readData);
 				const sensorData = buffer.readUInt8(0, true);
-				console.log("Read after buffer: " + sensorData);
+				// console.log("Read after buffer: " + sensorData);
 				this.setState({
 					values: {
 						...this.state.values,
 						[readZeroCharacteristic]: sensorData,
 					},
 				});
-				console.log(this.state.values);
+				// console.log(this.state.values);
 				if (sensorData === 1) {
 					console.log("Zero Scale = TRUE");
 				} else {
@@ -126,13 +126,15 @@ export default class CalibrationScreen extends Component {
 
 	writeWeight(num) {
 		var writeCharacteristics = "785ecf18-15d3-4097-b5fa-a876c34d71d3";
-		console.log(this.state.values);
-		console.log("num value: " + num);
-		console.log("string data: " + this.state.values[writeCharacteristics]);
+		var readZeroCharacteristic = "0f22202b-1d12-49ed-89b3-1c96bebd7542";
+		console.log(this.state.values[readZeroCharacteristic]);
+		// console.log("num value: " + num);
+		// console.log("string data: " + this.state.values[writeCharacteristics]);
 		// Convert data to byte array before write/writeWithoutResponse
 		// const data = stringToBytes(this.state.values[writeCharacteristics]);
 		const data = stringToBytes(num);
-		BleManager.writeWithoutResponse(
+		// Set state to not calibrated
+		BleManager.write(
 			this.state.connected_peripheral,
 			this.serviceUUID(),
 			writeCharacteristics,
@@ -140,7 +142,8 @@ export default class CalibrationScreen extends Component {
 		)
 			.then(() => {
 				// Success code
-				console.log("Writed: " + data);
+				// console.log("Writed: " + data);
+				this.readWeight(this.state.connected_peripheral);
 			})
 			.catch((error) => {
 				// Failure code
@@ -150,13 +153,12 @@ export default class CalibrationScreen extends Component {
 
 	writeZero() {
 		var writeCharacteristics = "54be66f0-2ec3-40cf-a4df-64d4c10cd9f5";
-		console.log(this.state.values);
-		console.log(
-			"Zero Scale data: " + this.state.values[writeCharacteristics]
-		);
+		// console.log(this.state.values);
+		// console.log("Zero Scale data: " + this.state.values[writeCharacteristics]);
 		// Convert data to byte array before write/writeWithoutResponse
-		const data = stringToBytes(this.state.values[writeCharacteristics]);
-		BleManager.writeWithoutResponse(
+		// const data = stringToBytes(this.state.values[writeCharacteristics]);
+		const data = stringToBytes("1");
+		BleManager.write(
 			this.state.connected_peripheral,
 			this.serviceUUID(),
 			writeCharacteristics,
@@ -164,13 +166,18 @@ export default class CalibrationScreen extends Component {
 		)
 			.then(() => {
 				// Success code
-				console.log("Writed: " + data);
+				// console.log("Writed: " + data);
+				this.readZero(this.state.connected_peripheral);
 			})
 			.catch((error) => {
 				// Failure code
 				console.log(error);
 			});
 	}
+
+	// isCalibrated() {
+	// 	this.state.values["0f22202b-1d12-49ed-89b3-1c96bebd7542"] ? "TRUE" :  "FALSE"
+	// }
 
 	render() {
 		return (
@@ -180,19 +187,22 @@ export default class CalibrationScreen extends Component {
 						Load Cell Calibration
 					</Text>
 				</View> */}
-				<View style={styles.body}>
+				<View style={styles.cal_status}>
 					<Text style={styles.body_text}>
-						{"SET_ZERO_SCALE = " +
-							this.state.values[
-								"0f22202b-1d12-49ed-89b3-1c96bebd7542"
-							]}
+						{this.state.values[
+							"0f22202b-1d12-49ed-89b3-1c96bebd7542"
+						] == 1
+							? "SYSTEM CALIBRATED"
+							: "NOT CALIBRATED"}
 					</Text>
-					<CustomButton
+					{/* <CustomButton
 						title="Read SET_ZERO_SCALE"
 						onPress={() => {
 							this.readZero(this.state.connected_peripheral);
 						}}
-					/>
+					/> */}
+				</View>
+				<View style={styles.body}>
 					<CustomButton
 						title="+"
 						onPress={() => {
@@ -201,6 +211,8 @@ export default class CalibrationScreen extends Component {
 									...this.state.values,
 									["785ecf18-15d3-4097-b5fa-a876c34d71d3"]:
 										"1",
+									["0f22202b-1d12-49ed-89b3-1c96bebd7542"]:
+										"0",
 								},
 							});
 							this.writeWeight("1");
@@ -215,16 +227,20 @@ export default class CalibrationScreen extends Component {
 					<CustomButton
 						title="-"
 						onPress={() => {
+							this.writeWeight("2");
 							this.setState({
 								values: {
 									...this.state.values,
 									["785ecf18-15d3-4097-b5fa-a876c34d71d3"]:
 										"2",
+									["0f22202b-1d12-49ed-89b3-1c96bebd7542"]:
+										"0",
 								},
 							});
-							this.writeWeight("2");
 						}}
 					/>
+				</View>
+				<View style={styles.footer}>
 					<CustomButton
 						title="Save"
 						onPress={() => {
@@ -238,12 +254,12 @@ export default class CalibrationScreen extends Component {
 							this.writeZero();
 						}}
 					/>
-					<CustomButton
+					{/* <CustomButton
 						title="Read Measured Weight"
 						onPress={() => {
 							this.readWeight(this.state.connected_peripheral);
 						}}
-					/>
+					/> */}
 				</View>
 			</View>
 		);

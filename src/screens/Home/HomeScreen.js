@@ -293,6 +293,7 @@ export default class HomeScreen extends Component {
 					/>
 					{!this.state.connected_peripheral && (
 						<FlatList
+							style={styles.connectList}
 							data={this.state.peripherals}
 							renderItem={this.renderItem.bind(this)}
 						/>

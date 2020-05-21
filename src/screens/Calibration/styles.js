@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flex: 12,
 		alignSelf: "stretch",
 		backgroundColor: "#F5FCFF",
 	},
@@ -18,6 +18,20 @@ const styles = StyleSheet.create({
 	body_text: {
 		textAlign: "center",
 		fontSize: 25,
+		paddingVertical: 25,
+	},
+	cal_status: {
+		flex: 2,
+		borderColor: "#668657",
+		borderWidth: 5,
+		borderRadius: 15,
+		margin: 15,
+	},
+	body: {
+		flex: 4,
+	},
+	footer: {
+		padding: 10,
 	},
 });
 

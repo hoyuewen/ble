@@ -55,6 +55,9 @@ const styles = StyleSheet.create({
 	attendees_container: {
 		flex: 1,
 	},
+	connectList: {
+		textAlignVertical: "center",
+	},
 });
 
 export default styles;
