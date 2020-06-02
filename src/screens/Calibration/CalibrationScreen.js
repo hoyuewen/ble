@@ -133,6 +133,7 @@ export default class CalibrationScreen extends Component {
 		// Convert data to byte array before write/writeWithoutResponse
 		// const data = stringToBytes(this.state.values[writeCharacteristics]);
 		const data = stringToBytes(num);
+		console.log(data);
 		// Set state to not calibrated
 		BleManager.writeWithoutResponse(
 			this.state.connected_peripheral,
@@ -188,11 +189,6 @@ export default class CalibrationScreen extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				{/* <View style={styles.header}>
-					<Text style={styles.header_text}>
-						Load Cell Calibration
-					</Text>
-				</View> */}
 				<View style={styles.cal_status}>
 					<Text style={styles.body_text}>
 						{this.state.values[
@@ -290,12 +286,6 @@ export default class CalibrationScreen extends Component {
 							this.writeZero();
 						}}
 					/>
-					{/* <CustomButton
-						title="Read Measured Weight"
-						onPress={() => {
-							this.readWeight(this.state.connected_peripheral);
-						}}
-					/> */}
 				</View>
 			</View>
 		);

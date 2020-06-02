@@ -178,10 +178,10 @@ export default class DeviceScreen extends Component {
 	}
 
 	updateValue(key, value) {
-		console.log(value);
+		console.log(`key: ${key}, value: ${value}`);
 		var readableData;
 		if (key === "a4cabb0e-1792-4d88-ada2-f92477bb1c8e") {
-			console.log(key);
+			// console.log(key);
 			if (value === 0) {
 				readableData = "Battery State Unknown";
 				this.setState({
@@ -195,7 +195,7 @@ export default class DeviceScreen extends Component {
 				});
 				// this.state.values[key] = readableData;
 			} else if (value === "2") {
-				console.log("Charging");
+				// console.log("Charging");
 				readableData = "Battery State Charging";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
@@ -294,37 +294,6 @@ export default class DeviceScreen extends Component {
 			this.setState({
 				values: { ...this.state.values, [key]: `${value}%` },
 			});
-			// if (value === 0) {
-			// 	readableData = "Unknown";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// } else if (value === 1) {
-			// 	readableData = "Very Low";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// } else if (value === 2) {
-			// 	readableData = "Power Source USB Host";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// } else if (value === 3) {
-			// 	readableData = "Power Source USB Adapter";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// } else if (value === 4) {
-			// 	readableData = "Power Source USB OTG";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// } else if (value === 5) {
-			// 	readableData = "Power Source Battery";
-			// 	this.setState({
-			// 		values: { ...this.state.values, [key]: readableData },
-			// 	});
-			// }
 		}
 	}
 
