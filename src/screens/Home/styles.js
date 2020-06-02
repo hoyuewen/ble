@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		color: "#FFF",
 		fontWeight: "bold",
+		textAlignVertical: "center",
 	},
 	body: {
 		flex: 19,

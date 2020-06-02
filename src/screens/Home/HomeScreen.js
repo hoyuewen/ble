@@ -125,10 +125,12 @@ export default class HomeScreen extends Component {
 				var el = peripherals.filter((el) => {
 					return el.id === peripheral.id;
 				});
+				console.log(peripheral);
 				if (!el.length) {
 					peripherals.push({
 						id: peripheral.id, // mac address of the peripheral
 						name: peripheral.name, // descriptive name given to the peripheral
+						localName: peripheral.advertising.localName,
 					});
 					this.peripherals = peripherals; // update the array of peripherals
 				}
@@ -163,40 +165,21 @@ export default class HomeScreen extends Component {
 	}
 
 	renderItem({ item }) {
-		if (item.full_name) {
-			return (
-				<View style={styles.list_item} key={item.id}>
-					<Text style={styles.list_item_text}>{item.full_name}</Text>
-					<Text style={styles.list_item_text}>
-						{item.time_entered}
-					</Text>
-				</View>
-			);
-		}
+		// if (item.full_name) {
+		// 	return (
+		// 		<View style={styles.list_item} key={item.id}>
+		// 			<Text style={styles.list_item_text}>{item.full_name}</Text>
+		// 			<Text style={styles.list_item_text}>
+		// 				{item.time_entered}
+		// 			</Text>
+		// 		</View>
+		// 	);
+		// }
 
-		if (item.name === null) {
+		if (item.localName) {
 			return (
 				<View style={styles.list_item} key={item.id}>
-					<Text style={styles.list_item_text}>{item.id}</Text>
-					<CustomButton
-						title="Connect"
-						color="#1491ee"
-						style={styles.list_item_button}
-						onPress={() => {
-							this.connect(item.id);
-							// this.props.navigation.navigate('Device', {
-							//   connected_peripheral: item.id,
-							// });
-							// this.props.navigation.navigate("Device", { connected_peripheral: item.id,})
-							console.log(item.name + " Pressed");
-						}}
-					/>
-				</View>
-			);
-		} else {
-			return (
-				<View style={styles.list_item} key={item.id}>
-					<Text style={styles.list_item_text}>{item.name}</Text>
+					<Text style={styles.list_item_text}>{item.localName}</Text>
 					<CustomButton
 						title="Connect"
 						color="#1491ee"
@@ -213,6 +196,26 @@ export default class HomeScreen extends Component {
 				</View>
 			);
 		}
+		// else {
+		// 	return (
+		// 		<View style={styles.list_item} key={item.id}>
+		// 			<Text style={styles.list_item_text}>{item.name}</Text>
+		// 			<CustomButton
+		// 				title="Connect"
+		// 				color="#1491ee"
+		// 				style={styles.list_item_button}
+		// 				onPress={() => {
+		// 					this.connect(item.id);
+		// 					// this.props.navigation.navigate('Device', {
+		// 					//   connected_peripheral: item.id,
+		// 					// });
+		// 					// this.props.navigation.navigate("Device", { connected_peripheral: item.id,})
+		// 					console.log(item.name + " Pressed");
+		// 				}}
+		// 			/>
+		// 		</View>
+		// 	);
+		// }
 	}
 
 	connect(peripheral_id) {
@@ -269,7 +272,7 @@ export default class HomeScreen extends Component {
 				<View style={styles.header}>
 					<View style={styles.app_title}>
 						<Text style={styles.header_text}>
-							BLE Diagnostics Application
+							Search for BovineHub
 						</Text>
 					</View>
 					<View style={styles.header_button_container}>

@@ -1,6 +1,7 @@
 import strings from "./strings";
 import styles from "./styles";
 import React, { Component } from "react";
+import { Buffer } from "buffer";
 import {
 	AppRegistry,
 	Platform,
@@ -33,9 +34,10 @@ export default class DeviceScreen extends Component {
 		};
 
 		this.sensors = {
-			"00002a1b-0000-1000-8000-00805f9b34fb": "Battery Level State",
-			"00002a1a-0000-1000-8000-00805f9b34fb": "Battery Power Source",
+			"a4cabb0e-1792-4d88-ada2-f92477bb1c8e": "Battery State",
+			"8d3b3544-36ba-4d8b-a156-da0956dab884": "Battery Power Source",
 			"247e76c8-9dd4-412d-a75b-5244ad4cb8f4": "RSSI Signal Strength",
+			"f2c51a3b-f7d2-4998-999c-e9327f7ea987": "Battery Level",
 		};
 	}
 
@@ -74,6 +76,10 @@ export default class DeviceScreen extends Component {
 			//console.log(id);
 			const characteristicN = this.notifyUUID(id);
 			console.log("characteristic N: " + characteristicN);
+			BleManager.retrieveServices(id).then((peripheralInfo) => {
+				// Success code
+				console.log("Peripheral info:", peripheralInfo);
+			});
 			await BleManager.startNotification(device, service, characteristicN)
 				.then(() => {
 					// Add event listener
@@ -84,18 +90,9 @@ export default class DeviceScreen extends Component {
 							//var string = new TextDecoder('utf-8').decode(value);
 							// const data = bytesToString(value);
 							console.log(
-								"id: " +
-									id +
-									", val: " +
-									value +
-									", data: " +
-									value[0] +
-									", service: " +
-									service +
-									"peripheral: " +
-									peripheral +
-									", Characteristic: " +
-									characteristic
+								`id: ${id}, val: ${value}, data: ${
+									value[0]
+								}, service: ${service}, peripheral: ${peripheral}, Characteristic: ${characteristic}`
 							);
 							const data = value[0];
 							// console.log(
@@ -110,19 +107,81 @@ export default class DeviceScreen extends Component {
 				.catch((error) => {
 					Alert.alert(
 						"Err..",
-						"Could not get characteristics value for ",
-						characteristicN
+						`Could not get characteristics value for ${characteristicN}`
 					);
-					BleManager.disconnect(device);
+					// BleManager.disconnect(device);
+				});
+		}
+	}
+
+	readCharacteristic(characteristic) {
+		console.log(characteristic);
+		BleManager.read(
+			this.state.connected_peripheral,
+			this.serviceUUID(),
+			characteristic
+		)
+			.then((readData) => {
+				// Success code
+				// console.log("Read before buffer: " + readData);
+				// const buffer = bytesToString(readData);
+				const buffer = Buffer.from(readData);
+				console.log("Read before buffer: " + buffer);
+				const sensorData = buffer.readUInt8(0, true);
+				console.log("Read after buffer: " + sensorData);
+				// this.setState({
+				// 	values: {
+				// 		...this.state.values,
+				// 		[readCharacteristic]: sensorData,
+				// 	},
+				// });
+				// console.log(this.state.values);
+				this.updateValue(characteristic, sensorData);
+				// return sensorData;
+			})
+			.catch((error) => {
+				// Failure code
+				console.log(error);
+			});
+	}
+
+	async readSensors() {
+		for (const id in this.sensors) {
+			await BleManager.read(
+				this.state.connected_peripheral,
+				this.serviceUUID(),
+				id
+			)
+				.then((readData) => {
+					// Success code
+					// console.log("Read before buffer: " + readData);
+					// const buffer = bytesToString(readData);
+					const buffer = Buffer.from(readData);
+					console.log("Read before buffer: " + buffer);
+					const sensorData = buffer.readUInt8(0, true);
+					console.log("Read after buffer: " + sensorData);
+					// this.setState({
+					// 	values: {
+					// 		...this.state.values,
+					// 		[readCharacteristic]: sensorData,
+					// 	},
+					// });
+					// console.log(this.state.values);
+					this.updateValue(id, sensorData);
+					// return sensorData;
+				})
+				.catch((error) => {
+					// Failure code
+					console.log(error);
 				});
 		}
 	}
 
 	updateValue(key, value) {
-		console.log(key);
 		console.log(value);
 		var readableData;
-		if (key === "00002a1b-0000-1000-8000-00805f9b34fb") {
+		if (key === "a4cabb0e-1792-4d88-ada2-f92477bb1c8e") {
+			console.log(key);
 			if (value === 0) {
 				readableData = "Battery State Unknown";
 				this.setState({
@@ -135,7 +194,8 @@ export default class DeviceScreen extends Component {
 					values: { ...this.state.values, [key]: readableData },
 				});
 				// this.state.values[key] = readableData;
-			} else if (value === 2) {
+			} else if (value === "2") {
+				console.log("Charging");
 				readableData = "Battery State Charging";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
@@ -167,37 +227,37 @@ export default class DeviceScreen extends Component {
 			}
 		} else if (key === "247e76c8-9dd4-412d-a75b-5244ad4cb8f4") {
 			if (value === 0) {
-				readableData = "RSSI Signal Unknown";
+				readableData = "Signal Unknown";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			} else if (value === 1) {
-				readableData = "Signal Strength Very Poor";
+				readableData = "Very Poor";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			} else if (value === 2) {
-				readableData = "Signal Strength Poor";
+				readableData = "Poor";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			} else if (value === 3) {
-				readableData = "Signal Strength Fair";
+				readableData = "Fair";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			} else if (value === 4) {
-				readableData = "Signal Strength Strong";
+				readableData = "Strong";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			} else if (value === 5) {
-				readableData = "Signal Strength Very Strong";
+				readableData = "Very Strong";
 				this.setState({
 					values: { ...this.state.values, [key]: readableData },
 				});
 			}
-		} else if (key === "00002a1a-0000-1000-8000-00805f9b34fb") {
+		} else if (key === "8d3b3544-36ba-4d8b-a156-da0956dab884") {
 			if (value === 0) {
 				readableData = "Power Source Unknown";
 				this.setState({
@@ -229,6 +289,42 @@ export default class DeviceScreen extends Component {
 					values: { ...this.state.values, [key]: readableData },
 				});
 			}
+		} else if (key === "f2c51a3b-f7d2-4998-999c-e9327f7ea987") {
+			console.log(value);
+			this.setState({
+				values: { ...this.state.values, [key]: `${value}%` },
+			});
+			// if (value === 0) {
+			// 	readableData = "Unknown";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// } else if (value === 1) {
+			// 	readableData = "Very Low";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// } else if (value === 2) {
+			// 	readableData = "Power Source USB Host";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// } else if (value === 3) {
+			// 	readableData = "Power Source USB Adapter";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// } else if (value === 4) {
+			// 	readableData = "Power Source USB OTG";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// } else if (value === 5) {
+			// 	readableData = "Power Source Battery";
+			// 	this.setState({
+			// 		values: { ...this.state.values, [key]: readableData },
+			// 	});
+			// }
 		}
 	}
 
@@ -260,20 +356,40 @@ export default class DeviceScreen extends Component {
 						);
 					})}
 				</View>
-				{/* <FlatList
-					data={this.state.values}
-					renderItem={({ item }) => {
-						return <Text style={styles.textStyle}>{item.key}</Text>;
-					}}
-				/> */}
 				<View style={styles.buttonContainer}>
 					<View style={styles.button}>
 						<CustomButton
 							title="Update Data"
 							onPress={() => {
-								this.setupNotifications(
-									this.state.connected_peripheral
-								);
+								this.readSensors();
+								// setTimeout(
+								// 	() =>
+								// 		this.readCharacteristic(
+								// 			"a4cabb0e-1792-4d88-ada2-f92477bb1c8e"
+								// 		),
+								// 	0
+								// ),
+								// 	setTimeout(
+								// 		() =>
+								// 			this.readCharacteristic(
+								// 				"247e76c8-9dd4-412d-a75b-5244ad4cb8f4"
+								// 			),
+								// 		1000
+								// 	),
+								// 	setTimeout(
+								// 		() =>
+								// 			this.readCharacteristic(
+								// 				"8d3b3544-36ba-4d8b-a156-da0956dab884"
+								// 			),
+								// 		1000
+								// 	),
+								// 	setTimeout(
+								// 		() =>
+								// 			this.readCharacteristic(
+								// 				"f2c51a3b-f7d2-4998-999c-e9327f7ea987"
+								// 			),
+								// 		1000
+								// 	);
 							}}
 						/>
 					</View>

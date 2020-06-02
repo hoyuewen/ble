@@ -134,7 +134,7 @@ export default class CalibrationScreen extends Component {
 		// const data = stringToBytes(this.state.values[writeCharacteristics]);
 		const data = stringToBytes(num);
 		// Set state to not calibrated
-		BleManager.write(
+		BleManager.writeWithoutResponse(
 			this.state.connected_peripheral,
 			this.serviceUUID(),
 			writeCharacteristics,
@@ -143,7 +143,10 @@ export default class CalibrationScreen extends Component {
 			.then(() => {
 				// Success code
 				// console.log("Writed: " + data);
-				this.readWeight(this.state.connected_peripheral);
+				setTimeout(
+					() => this.readWeight(this.state.connected_peripheral),
+					100
+				);
 			})
 			.catch((error) => {
 				// Failure code
@@ -158,7 +161,7 @@ export default class CalibrationScreen extends Component {
 		// Convert data to byte array before write/writeWithoutResponse
 		// const data = stringToBytes(this.state.values[writeCharacteristics]);
 		const data = stringToBytes("1");
-		BleManager.write(
+		BleManager.writeWithoutResponse(
 			this.state.connected_peripheral,
 			this.serviceUUID(),
 			writeCharacteristics,
@@ -167,7 +170,10 @@ export default class CalibrationScreen extends Component {
 			.then(() => {
 				// Success code
 				// console.log("Writed: " + data);
-				this.readZero(this.state.connected_peripheral);
+				setTimeout(
+					() => this.readZero(this.state.connected_peripheral),
+					100
+				);
 			})
 			.catch((error) => {
 				// Failure code
@@ -204,6 +210,21 @@ export default class CalibrationScreen extends Component {
 				</View>
 				<View style={styles.body}>
 					<CustomButton
+						title="+10"
+						onPress={() => {
+							this.setState({
+								values: {
+									...this.state.values,
+									["785ecf18-15d3-4097-b5fa-a876c34d71d3"]:
+										"1",
+									["0f22202b-1d12-49ed-89b3-1c96bebd7542"]:
+										"0",
+								},
+							});
+							this.writeWeight("3");
+						}}
+					/>
+					<CustomButton
 						title="+"
 						onPress={() => {
 							this.setState({
@@ -228,6 +249,21 @@ export default class CalibrationScreen extends Component {
 						title="-"
 						onPress={() => {
 							this.writeWeight("2");
+							this.setState({
+								values: {
+									...this.state.values,
+									["785ecf18-15d3-4097-b5fa-a876c34d71d3"]:
+										"2",
+									["0f22202b-1d12-49ed-89b3-1c96bebd7542"]:
+										"0",
+								},
+							});
+						}}
+					/>
+					<CustomButton
+						title="-10"
+						onPress={() => {
+							this.writeWeight("4");
 							this.setState({
 								values: {
 									...this.state.values,

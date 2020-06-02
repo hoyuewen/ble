@@ -1,0 +1,6 @@
+module Pods_myBLE_myBLETests {
+  umbrella header "Pods-myBLE-myBLETests-umbrella.h"
+
+  export *
+  module * { export * }
+}
